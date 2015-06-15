@@ -24,6 +24,8 @@ mkdir -p /etc/minion
 mv /tmp/frontend.json /etc/minion
 
 # Start up minion-frontend; in Docker, this is the CMD
-if [[ `id -un vagrant` == 'vagrant' ]]; then
+if [[ $MINION_DOCKERIZED == 'true' ]]; then
+  scripts/minion-frontend -a 0.0.0.0 --debug --reload
+else
   scripts/minion-frontend -a 0.0.0.0 --debug --reload &
 fi

@@ -65,3 +65,8 @@ sleep 5
 
 # Create the initial administrator and database
 scripts/minion-db-init "$MINION_ADMINISTRATOR_EMAIL" "$MINION_ADMINISTRATOR_NAME" y
+
+# Eternal process for Docker
+if [[ $MINION_DOCKERIZED == "true" ]]; then
+  tail -f /var/log/mongodb/mongodb.log /var/log/rabbitmq/*.log
+fi

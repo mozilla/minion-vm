@@ -2,6 +2,7 @@
 FROM ubuntu:14.04
 MAINTAINER April King <april@mozilla.com>
 ENV MINION_BACKEND /opt/minion/minion-backend
+ENV MINION_DOCKERIZED true
 EXPOSE 8383
 
 # This is specifically cloned from backend.sh to help with Docker's
@@ -28,7 +29,4 @@ COPY backend.sh /tmp/backend.sh
 RUN chmod 755 /tmp/backend.sh
 
 # Setup the backend environment
-RUN /tmp/backend.sh
-
-# Watch the log files
-CMD tail -f /var/log/mongodb/mongodb.log /var/log/rabbitmq/*.log
+CMD /tmp/backend.sh

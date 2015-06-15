@@ -1,6 +1,7 @@
 # Start with Ubuntu 14.04 (LTS), and build a Minion install up from there
 FROM ubuntu:14.04
 MAINTAINER April King <april@mozilla.com>
+ENV MINION_DOCKERIZED true
 ENV MINION_FRONTEND /opt/minion/minion-frontend
 EXPOSE 8080
 RUN apt-get update && apt-get install -y build-essential \
@@ -21,7 +22,4 @@ COPY frontend.sh /tmp/frontend.sh
 RUN chmod 755 /tmp/frontend.sh
 
 # Setup the frontend environment
-RUN /tmp/frontend.sh
-
-# Start it up!
-CMD minion-frontend -a 0.0.0.0 --debug --reload
+CMD /tmp/frontend.sh
