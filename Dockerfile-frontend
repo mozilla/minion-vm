@@ -18,7 +18,10 @@ RUN git clone -b dependencies https://github.com/marumari/minion-frontend.git ${
 # Move files into place
 COPY frontend.json /tmp/frontend.json
 COPY frontend.sh /tmp/frontend.sh
-RUN chmod 755 /tmp/frontend.sh && /tmp/frontend.sh
+RUN chmod 755 /tmp/frontend.sh
+
+# Setup the frontend environment
+RUN /tmp/frontend.sh
 
 # Start it up!
 CMD minion-frontend -a 0.0.0.0 --debug --reload

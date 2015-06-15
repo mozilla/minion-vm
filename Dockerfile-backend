@@ -24,7 +24,10 @@ RUN git clone -b dependencies https://github.com/marumari/minion-backend.git ${M
 # Move files into place
 COPY backend.json /tmp/backend.json
 COPY backend.sh /tmp/backend.sh
-RUN chmod 755 /tmp/backend.sh && /tmp/backend.sh
+RUN chmod 755 /tmp/backend.sh
+
+# Setup the backend environment
+RUN /tmp/backend.sh
 
 # Watch the log files
 CMD tail -f /var/log/mongodb/mongodb.log /var/log/rabbitmq/*.log
