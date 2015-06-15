@@ -36,7 +36,7 @@ mv /tmp/backend.json /etc/minion
 
 # Install minion-nmap-plugin
 git clone https://github.com/mozilla/minion-nmap-plugin ${MINION_BACKEND}/../minion-nmap-plugin
-python ${MINION_BACKEND}/../minion-nmap-plugin/setup.py develop
+python ${MINION_BACKEND}/../minion-nmap-plugin/setup.py install
 
 # Create database directory for MongoDB and start it up
 mkdir -m 700 -p /data/db
@@ -50,8 +50,8 @@ sleep 5
 
 # Setup minion user account, lock down eggs directory
 useradd -m minion
-mkdir -m 700 ~minion/.python-eggs /run/minion /var/lib/minion
-chown minion:minion ~minion/.python-eggs /run/minion /var/lib/minion
+mkdir -m 700 ~minion/.python-eggs /run/minion /var/lib/minion /var/log/minion
+chown minion:minion ~minion/.python-eggs /run/minion /var/lib/minion /var/log/minion
 
 # Start Minion
 cd $MINION_BACKEND
