@@ -23,5 +23,5 @@ You can also access the minion-frontend web site at http://192.168.50.50:8080 (o
 * `docker build -t 'mozilla/minion-frontend' -f Dockerfile-frontend .`
 
 # To run Docker:
-* `docker run -d --name 'minion-backend'`
+* `docker run -d --name 'minion-backend' 'mozilla/minion-backend'`
 * `docker run -d -p 8080:8080 --name 'minion-frontend' --link minion-backend:minion-backend 'mozilla/minion-frontend'`
