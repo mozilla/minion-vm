@@ -1,0 +1,5 @@
+{
+  "backend-api": {
+    "url": "http://minion-backend:8383"
+  }
+}

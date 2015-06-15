@@ -1,0 +1,30 @@
+# Start with Ubuntu 14.04 (LTS), and build a Minion install up from there
+FROM ubuntu:14.04
+MAINTAINER April King <april@mozilla.com>
+ENV MINION_BACKEND /opt/minion/minion-backend
+EXPOSE 8383
+
+# This is specifically cloned from backend.sh to help with Docker's
+# iterative build process
+RUN apt-get update && apt-get install -y build-essential \
+    curl \
+    git \
+    libcurl4-openssl-dev \
+    mongodb-server \
+    postfix \
+    python \
+    python-dev \
+    python-setuptools \
+    rabbitmq-server \
+    stunnel
+
+# Install minion-frontend
+RUN git clone -b dependencies https://github.com/marumari/minion-backend.git ${MINION_BACKEND}
+
+# Move files into place
+COPY backend.json /tmp
+COPY backend.sh /tmp
+RUN chmod 755 /tmp/frontend.sh && /tmp/frontend.sh
+
+# Watch the log files
+CMD tail -f /var/log/mongodb/mongodb.log /var/log/rabbitmq/*.log
