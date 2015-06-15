@@ -44,6 +44,10 @@ chown mongodb:mongodb /data/db
 mongod --fork --logpath /var/log/mongodb/mongodb.log
 sleep 5
 
+# Start RabbitMQ
+rabbitmq-server -detached
+sleep 5
+
 # Setup minion user account, lock down eggs directory
 useradd -m minion
 mkdir -m 700 ~minion/.python-eggs /run/minion /var/lib/minion
