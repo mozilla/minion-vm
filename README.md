@@ -19,8 +19,8 @@ That's it!  You can ssh into your new (and hopefully fully-functioning) Minion i
 You can also access the minion-frontend web site at http://192.168.50.50:8080 (or whatever you set the IP to).
 
 # To configure Docker:
-* `docker build -t 'mozilla/minion-backend'  -f Dockerfile-backend`
-* `docker build -t 'mozilla/minion-frontend' -f Dockerfile-frontend`
+* `docker build -t 'mozilla/minion-backend' -f Dockerfile-backend .`
+* `docker build -t 'mozilla/minion-frontend' -f Dockerfile-frontend .`
 
 # To run Docker:
 * `docker run -d --name 'minion-backend'`
