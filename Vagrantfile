@@ -15,7 +15,8 @@ APT_CACHE_SRC = "/Users/april/Library/Caches/com.hashicorp.vagrant/apt-cache/" #
 APT_CACHE_DST = "/var/cache/apt/archives/"
 
 # Vagrant config options
-MEMORY = 1024
+FRONTEND_MEMORY = 1024
+BACKEND_MEMORY = 2048
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -30,12 +31,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s.path = "vagrant-hosts.sh"
   end
 
-  config.vm.provider "virtualbox" do |v|
-    v.customize ["modifyvm", :id, "--memory", MEMORY.to_i]
-  end
-
   # Build minion-backend
   config.vm.define "minion-backend" do |backend|
+    config.vm.provider "virtualbox" do |v|
+      v.customize ["modifyvm", :id, "--memory", BACKEND_MEMORY.to_i]
+    end
+
     backend.vm.hostname = "minion-backend"
     backend.vm.network "private_network", ip: BACKEND_IP
     backend.vm.synced_folder BACKEND_SRC, BACKEND_DST, create: true
@@ -48,6 +49,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Build minion-frontend
   config.vm.define "minion-frontend" do |frontend|
+    config.vm.provider "virtualbox" do |v|
+      v.customize ["modifyvm", :id, "--memory", FRONTEND_MEMORY.to_i]
+    end
+
     frontend.vm.hostname = "minion-frontend"
     frontend.vm.network "private_network", ip: FRONTEND_IP
     frontend.vm.synced_folder FRONTEND_SRC, FRONTEND_DST, create: true
