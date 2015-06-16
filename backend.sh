@@ -36,11 +36,11 @@ mv /tmp/backend.json /etc/minion
 
 # Install minion-nmap-plugin
 git clone https://github.com/mozilla/minion-nmap-plugin ${MINION_BACKEND}/../minion-nmap-plugin
-python ${MINION_BACKEND}/../minion-nmap-plugin/setup.py install
+cd ${MINION_BACKEND}/../minion-nmap-plugin
+python setup.py install
 
 # Create database directory for MongoDB and start it up
-mkdir -m 700 -p /data/db
-chown mongodb:mongodb /data/db
+install -m 700 -o mongodb -g mongodb -d /data/db
 mongod --fork --logpath /var/log/mongodb/mongodb.log
 sleep 5
 
@@ -50,8 +50,7 @@ sleep 5
 
 # Setup minion user account, lock down eggs directory
 useradd -m minion
-mkdir -m 700 ~minion/.python-eggs /run/minion /var/lib/minion /var/log/minion
-chown minion:minion ~minion/.python-eggs /run/minion /var/lib/minion /var/log/minion
+install -m 700 -o minion -g minion -d /run/minion -d /var/lib/minion -d /var/log/minion -d ~minion/.python-eggs
 
 # Start Minion
 cd $MINION_BACKEND
@@ -60,7 +59,7 @@ su minion -c "scripts/minion-state-worker &"
 su minion -c "scripts/minion-scan-worker &"
 su minion -c "scripts/minion-plugin-worker &"
 su minion -c "scripts/minion-scanschedule-worker &"
-su minion -c "scripts/minion-scanscheduler &"
+su minion -c "scripts/minion-scanscheduler &"  # requires /run/minion
 sleep 5
 
 # Create the initial administrator and database
