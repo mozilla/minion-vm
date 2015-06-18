@@ -8,6 +8,7 @@ if [[ `id -un vagrant` == 'vagrant' ]]; then
     curl \
     git \
     libcurl4-openssl-dev \
+    libsasl2-dev \
     python \
     python-dev \
     python-setuptools \
