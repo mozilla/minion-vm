@@ -22,11 +22,13 @@ if [[ `id -un vagrant` == 'vagrant' ]]; then
 
   # For some reason, it has trouble adding the rabbitmq groups
   apt-get -y install rabbitmq-server
+
+  # Upgrade setuptools to the newest version
+  easy_install --upgrade setuptools
 fi
 
-
 # Install minion-backend
-# git clone https://github.com/marumari/minion-backend.git ${MINION_BACKEND}
+# git clone https://github.com/mozilla/minion-backend.git ${MINION_BACKEND}
 cd ${MINION_BACKEND}
 python setup.py develop
 
@@ -34,7 +36,8 @@ python setup.py develop
 mkdir -p /etc/minion
 mv /tmp/backend.json /etc/minion
 
-# Install minion-nmap-plugin
+# Install minion-nmap-plugin; comment out git clone if working on minion-nmap-plugin locally
+# via Vagrant synced folder
 git clone https://github.com/mozilla/minion-nmap-plugin ${MINION_BACKEND}/../minion-nmap-plugin
 cd ${MINION_BACKEND}/../minion-nmap-plugin
 python setup.py install
