@@ -21,6 +21,9 @@ RUN apt-get update && apt-get install -y build-essential \
     rabbitmq-server \
     stunnel
 
+# Update setuptools
+RUN easy_install --upgrade setuptools
+
 # Install minion-backend
 RUN git clone https://github.com/mozilla/minion-backend.git ${MINION_BACKEND}
 
