@@ -63,7 +63,12 @@ su minion -c "scripts/minion-scan-worker &"
 su minion -c "scripts/minion-plugin-worker &"
 su minion -c "scripts/minion-scanschedule-worker &"
 su minion -c "scripts/minion-scanscheduler &"  # requires /run/minion
-sleep 5
+
+# Wait for a minute for everything to finish starting up.
+
+# TODO: replace with a looping system that waits for the site to actually be up
+# prior to continuing
+sleep 60
 
 # Create the initial administrator and database
 scripts/minion-db-init "$MINION_ADMINISTRATOR_EMAIL" "$MINION_ADMINISTRATOR_NAME" y
