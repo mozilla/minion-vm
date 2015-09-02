@@ -4,23 +4,17 @@ MAINTAINER April King <april@mozilla.com>
 ENV MINION_DOCKERIZED true
 ENV MINION_FRONTEND /opt/minion/minion-frontend
 EXPOSE 8080
-RUN apt-get update && apt-get install -y build-essential \
-    curl \
-    git \
-    libcurl4-openssl-dev \
-    libsasl2-dev \
-    python \
-    python-dev \
-    python-setuptools \
-    stunnel
 
 # Install minion-frontend
 RUN git clone https://github.com/mozilla/minion-frontend.git ${MINION_FRONTEND}
 
 # Move files into place
 COPY frontend.json /tmp/frontend.json
+
 COPY frontend.sh /tmp/frontend.sh
-RUN chmod 755 /tmp/frontend.sh
+COPY common.sh /tmp/common.sh
+
+RUN chmod 755 /tmp/frontend.sh /tmp/common.sh
 
 # Setup the frontend environment
-CMD /tmp/frontend.sh
+CMD /tmp/common.sh && /tmp/frontend.sh

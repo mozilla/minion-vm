@@ -2,78 +2,74 @@
 
 MINION_ADMINISTRATOR_EMAIL="april@mozilla.com"
 MINION_ADMINISTRATOR_NAME="April King"
-MINION_BACKEND=/opt/minion/minion-backend
 
-# Only install if we're running on a system with vagrant
+# The base directory for large pieces of the install
+MINION_BASE_DIRECTORY=/opt/minion
+
+# Install backend only packages on Vagrant systems
 if [[ `id -un vagrant` == 'vagrant' ]]; then
-  apt-get update && apt-get -y install build-essential \
-    curl \
-    git \
+  apt-get -y install curl \
     libcurl4-openssl-dev \
     libffi-dev \
     mongodb-server \
     nmap \
     postfix \
-    python \
-    python-dev \
-    python-setuptools \
     rabbitmq-server \
     stunnel
 
   # For some reason, it has trouble adding the rabbitmq groups
   apt-get -y install rabbitmq-server
-
-  # Upgrade setuptools to the newest version
-  easy_install --upgrade setuptools
 fi
 
-# Install minion-backend
-# git clone https://github.com/mozilla/minion-backend.git ${MINION_BACKEND}
-cd ${MINION_BACKEND}
+# First, source the virtualenv
+cd ${MINION_BASE_DIRECTORY}
+source minion-env/bin/activate
+
+# Next, let's install minion-backend
+
+# Uncomment this line if you don't have a local working copy on your local system
+# git clone https://github.com/mozilla/minion-backend.git ${MINION_BASE_DIRECTORY}/minion-backend
+cd minion-backend
 python setup.py develop
 
-# Configure minion-backend
+# Configure minion-backend (listening on 0.0.0.0:8383, and with no blacklist)
 mkdir -p /etc/minion
 mv /tmp/backend.json /etc/minion
+mv /tmp/scan.json /etc/minion
 
-# Install minion-nmap-plugin; comment out git clone if working on minion-nmap-plugin locally
+# Install minion-nmap-plugin; comment out `git clone` if working on minion-nmap-plugin locally
 # via Vagrant synced folder
-git clone https://github.com/mozilla/minion-nmap-plugin ${MINION_BACKEND}/../minion-nmap-plugin
-cd ${MINION_BACKEND}/../minion-nmap-plugin
+git clone https://github.com/mozilla/minion-nmap-plugin ${MINION_BASE_DIRECTORY}/minion-nmap-plugin
+cd ${MINION_BASE_DIRECTORY}/minion-nmap-plugin
 python setup.py install
 
-# Create database directory for MongoDB and start it up
-install -m 700 -o mongodb -g mongodb -d /data/db
-mongod --fork --logpath /var/log/mongodb/mongodb.log
+# Start MongoDB
+service mongodb start
 sleep 5
 
 # Start RabbitMQ
-rabbitmq-server -detached
+service rabbitmq-server start
 sleep 5
 
-# Setup minion user account, lock down eggs directory
-useradd -m minion
-install -m 700 -o minion -g minion -d /run/minion -d /var/lib/minion -d /var/log/minion -d ~minion/.python-eggs
+# Add the minion init scripts to the system startup scripts
+cp ${MINION_BASE_DIRECTORY}/minion-backend/scripts/minion-init /etc/init.d/minion
+chown root:root /etc/init.d/minion
+chmod 755 /etc/init.d/minion
+update-rc.d minion defaults 40
+
+# Setup the minion environment for the minion user
+echo -e "\n# Minion convenience commands" >> ~minion/.bashrc
+echo -e "alias miniond=\"supervisord -c ${MINION_BASE_DIRECTORY}/minion-backend/etc/supervisord.conf\"" >> ~minion/.bashrc
+echo -e "alias minionctl=\"supervisorctl -c ${MINION_BASE_DIRECTORY}/minion-backend/etc/supervisord.conf\"" >> ~minion/.bashrc
 
 # Start Minion
-cd $MINION_BACKEND
-su minion -c "scripts/minion-backend-api runserver -a 0.0.0.0 --debug --reload &"
-su minion -c "scripts/minion-state-worker &"
-su minion -c "scripts/minion-scan-worker &"
-su minion -c "scripts/minion-plugin-worker &"
-su minion -c "scripts/minion-scanschedule-worker &"
-su minion -c "scripts/minion-scanscheduler &"  # requires /run/minion
-
-# Wait for a minute for everything to finish starting up.
-
-# TODO: replace with a looping system that waits for the site to actually be up
-# prior to continuing
-sleep 60
+service minion start
+sleep 30
 
 # Create the initial administrator and database
-scripts/minion-db-init "$MINION_ADMINISTRATOR_EMAIL" "$MINION_ADMINISTRATOR_NAME" y
+minion-db-init "$MINION_ADMINISTRATOR_EMAIL" "$MINION_ADMINISTRATOR_NAME" y
 
 # Eternal process for Docker
 if [[ $MINION_DOCKERIZED == "true" ]]; then
-  tail -f /var/log/mongodb/mongodb.log /var/log/rabbitmq/*.log
+  tail -f /var/log/minion/*.log
 fi
