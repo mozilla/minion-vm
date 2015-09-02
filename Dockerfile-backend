@@ -5,32 +5,17 @@ ENV MINION_BACKEND /opt/minion/minion-backend
 ENV MINION_DOCKERIZED true
 EXPOSE 8383
 
-# This is specifically cloned from backend.sh to help with Docker's
-# iterative build process
-RUN apt-get update && apt-get install -y build-essential \
-    curl \
-    git \
-    libcurl4-openssl-dev \
-    libffi-dev \
-    mongodb-server \
-    nmap \
-    postfix \
-    python \
-    python-dev \
-    python-setuptools \
-    rabbitmq-server \
-    stunnel
-
-# Update setuptools
-RUN easy_install --upgrade setuptools
-
 # Install minion-backend
 RUN git clone https://github.com/mozilla/minion-backend.git ${MINION_BACKEND}
 
 # Move files into place
 COPY backend.json /tmp/backend.json
+COPY scan.json /tmp/scan.json
+
 COPY backend.sh /tmp/backend.sh
+COPY common.sh /tmp/common.sh
+
 RUN chmod 755 /tmp/backend.sh
 
 # Setup the backend environment
-CMD /tmp/backend.sh
+CMD /tmp/common.sh && /tmp/backend.sh

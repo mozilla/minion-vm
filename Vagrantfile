@@ -39,6 +39,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s.path = "vagrant-hosts.sh"
   end
 
+  config.vm.provision "shell" do |s|
+    s.path = "common.sh"
+  end
+
   # Build minion-backend
   config.vm.define "minion-backend" do |backend|
     config.vm.provider "virtualbox" do |v|
@@ -50,7 +54,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     backend.vm.synced_folder BACKEND_SRC, BACKEND_DST, create: true
     # backend.vm.synced_folder BACKEND_PLUGIN_NMAP_SRC, BACKEND_PLUGIN_NMAP_DST, create: true
 
+    # Copy the configuration files into the VM
     backend.vm.provision "file", source: "backend.json", destination: "/tmp/backend.json"
+    backend.vm.provision "file", source: "scan.json", destination: "/tmp/scan.json"
+
     backend.vm.provision "shell" do |s|
       s.path = "backend.sh"
     end
@@ -67,6 +74,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     frontend.vm.synced_folder FRONTEND_SRC, FRONTEND_DST, create: true
 
     frontend.vm.provision "file", source: "frontend.json", destination: "/tmp/frontend.json"
+
     frontend.vm.provision "shell" do |s|
       s.path = "frontend.sh"
     end

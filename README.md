@@ -8,7 +8,7 @@ Mozilla Minion is available:
 
 # To configure Vagrant:
 * Edit the BACKEND\_SRC, FRONTEND\_SRC, and APT\_CACHE\_SRC variables in `Vagrantfile` to point to their locations on your local system
-* Edit the IP addresses in `Vagrantfile` and `hosts.sh` if you want your private network to use something besides 192.168.50.49 and 192.168.50.50
+* Edit the IP addresses in `Vagrantfile` and `vagrant-hosts.sh` if you want your private network to use something besides 192.168.50.49 and 192.168.50.50
 * Edit `backend.sh` to change the default administrator's email address and name
 
 # To run Vagrant:
