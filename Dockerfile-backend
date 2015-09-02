@@ -15,7 +15,7 @@ COPY scan.json /tmp/scan.json
 COPY backend.sh /tmp/backend.sh
 COPY common.sh /tmp/common.sh
 
-RUN chmod 755 /tmp/backend.sh
+RUN chmod 755 /tmp/backend.sh /tmp/common.sh
 
 # Setup the backend environment
 CMD /tmp/common.sh && /tmp/backend.sh

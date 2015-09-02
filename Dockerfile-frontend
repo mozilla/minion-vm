@@ -14,7 +14,7 @@ COPY frontend.json /tmp/frontend.json
 COPY frontend.sh /tmp/frontend.sh
 COPY common.sh /tmp/common.sh
 
-RUN chmod 755 /tmp/frontend.sh
+RUN chmod 755 /tmp/frontend.sh /tmp/common.sh
 
 # Setup the frontend environment
 CMD /tmp/common.sh && /tmp/frontend.sh
