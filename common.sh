@@ -33,4 +33,4 @@ useradd -m minion
 install -m 700 -o minion -g minion -d /run/minion -d /var/lib/minion -d /var/log/minion -d ~minion/.python-eggs
 
 # Setup the minion environment for the minion user
-echo -e "\n# Source minion-backend virtualenv\nsource ${MINION_BASE_DIRECTORY}/minion-env/bin/activate" >> ~minion/.profile
+echo -e "\n# Automatically source minion-backend virtualenv\nsource ${MINION_BASE_DIRECTORY}/minion-env/bin/activate" >> ~minion/.profile

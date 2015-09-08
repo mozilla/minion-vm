@@ -9,7 +9,6 @@ EXPOSE 8383
 RUN git clone https://github.com/mozilla/minion-backend.git ${MINION_BACKEND}
 
 # Move files into place
-COPY backend.json /tmp/backend.json
 COPY scan.json /tmp/scan.json
 
 COPY backend.sh /tmp/backend.sh
