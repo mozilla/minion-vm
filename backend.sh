@@ -69,7 +69,7 @@ sleep 30
 minion-db-init "$MINION_ADMINISTRATOR_EMAIL" "$MINION_ADMINISTRATOR_NAME" y
 
 # Give instructions to add debugging and automatic reloading
-echo "Add --debug --reload to minion-backend.supervisor.conf, to add automatic reloading of changes to Minion"
+echo "Add '--debug --reload' to minion-backend.supervisor.conf for automatic loading of changes to Minion"
 
 # Eternal process for Docker
 if [[ $MINION_DOCKERIZED == "true" ]]; then
