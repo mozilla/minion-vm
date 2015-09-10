@@ -5,9 +5,6 @@ ENV MINION_DOCKERIZED true
 ENV MINION_FRONTEND /opt/minion/minion-frontend
 EXPOSE 8080
 
-# Install minion-frontend
-RUN git clone https://github.com/mozilla/minion-frontend.git ${MINION_FRONTEND}
-
 # Move files into place
 COPY frontend.json /tmp/frontend.json
 
@@ -16,5 +13,14 @@ COPY common.sh /tmp/common.sh
 
 RUN chmod 755 /tmp/frontend.sh /tmp/common.sh
 
+# Install common software, setup virtualenv
+RUN /bin/bash -c /tmp/common.sh
+
+# Install minion-frontend
+RUN git clone https://github.com/mozilla/minion-frontend.git ${MINION_FRONTEND}
+
 # Setup the frontend environment
-CMD /tmp/common.sh && /tmp/frontend.sh
+RUN /bin/bash -c /tmp/frontend.sh
+
+# Start up the Minion frontend
+CMD service minion start && tail -F /var/log/minion/*
