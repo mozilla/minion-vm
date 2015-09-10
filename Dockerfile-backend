@@ -5,9 +5,6 @@ ENV MINION_BACKEND /opt/minion/minion-backend
 ENV MINION_DOCKERIZED true
 EXPOSE 8383
 
-# Install minion-backend
-RUN git clone https://github.com/mozilla/minion-backend.git ${MINION_BACKEND}
-
 # Move files into place
 COPY backend.json /tmp/backend.json
 COPY scan.json /tmp/scan.json
@@ -17,5 +14,14 @@ COPY common.sh /tmp/common.sh
 
 RUN chmod 755 /tmp/backend.sh /tmp/common.sh
 
+# Install common software, setup virtualenv
+RUN /bin/bash -c /tmp/common.sh
+
+# Install minion-backend
+RUN git clone https://github.com/mozilla/minion-backend.git ${MINION_BACKEND}
+
 # Setup the backend environment
-CMD /tmp/common.sh && /tmp/backend.sh
+RUN /bin/bash -c /tmp/backend.sh
+
+# Start up Minion backend
+CMD service mongodb start && service rabbitmq-server start && service minion start && tail -F /var/log/minion/*

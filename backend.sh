@@ -6,20 +6,18 @@ MINION_ADMINISTRATOR_NAME="April King"
 # The base directory for large pieces of the install
 MINION_BASE_DIRECTORY=/opt/minion
 
-# Install backend only packages on Vagrant systems
-if [[ `id -un vagrant` == 'vagrant' ]]; then
-  apt-get -y install curl \
-    libcurl4-openssl-dev \
-    libffi-dev \
-    mongodb-server \
-    nmap \
-    postfix \
-    rabbitmq-server \
-    stunnel
+# Install backend only packages
+apt-get -y install curl \
+  libcurl4-openssl-dev \
+  libffi-dev \
+  mongodb-server \
+  nmap \
+  postfix \
+  rabbitmq-server \
+  stunnel
 
-  # For some reason, it has trouble adding the rabbitmq groups
-  apt-get -y install rabbitmq-server
-fi
+# For some reason, it has trouble adding the rabbitmq groups
+apt-get -y install rabbitmq-server
 
 # First, source the virtualenv
 cd ${MINION_BASE_DIRECTORY}
@@ -43,14 +41,6 @@ git clone https://github.com/mozilla/minion-nmap-plugin ${MINION_BASE_DIRECTORY}
 cd ${MINION_BASE_DIRECTORY}/minion-nmap-plugin
 python setup.py install
 
-# Start MongoDB
-service mongodb start
-sleep 5
-
-# Start RabbitMQ
-service rabbitmq-server start
-sleep 5
-
 # Add the minion init scripts to the system startup scripts
 cp ${MINION_BASE_DIRECTORY}/minion-backend/scripts/minion-init /etc/init.d/minion
 chown root:root /etc/init.d/minion
@@ -62,6 +52,14 @@ echo -e "\n# Minion convenience commands" >> ~minion/.bashrc
 echo -e "alias miniond=\"supervisord -c ${MINION_BASE_DIRECTORY}/minion-backend/etc/supervisord.conf\"" >> ~minion/.bashrc
 echo -e "alias minionctl=\"supervisorctl -c ${MINION_BASE_DIRECTORY}/minion-backend/etc/supervisord.conf\"" >> ~minion/.bashrc
 
+# Start MongoDB
+service mongodb start
+sleep 5
+
+# Start RabbitMQ
+service rabbitmq-server start
+sleep 5
+
 # Start Minion
 service minion start
 sleep 30
@@ -69,7 +67,14 @@ sleep 30
 # Create the initial administrator and database
 minion-db-init "$MINION_ADMINISTRATOR_EMAIL" "$MINION_ADMINISTRATOR_NAME" y
 
-# Eternal process for Docker
+# If we're running in Docker, we start these with CMD
 if [[ $MINION_DOCKERIZED == "true" ]]; then
-  tail -f /var/log/minion/*.log
+  service minion stop
+  sleep 30
+  service rabbitmq-server stop
+  sleep 5
+
+  # This seems to be broken on Ubuntu 14.04, since it doesn't create the /var/run/mongodb directory
+  # service mongodb stop
+  kill `ps aux | grep mongod | grep -v grep | tr -s ' ' | cut -d ' ' -f 2`
 fi

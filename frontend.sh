@@ -2,11 +2,9 @@
 
 MINION_BASE_DIRECTORY=/opt/minion
 
-# Install frontend only packages on Vagrant systems
-if [[ `id -un vagrant` == 'vagrant' ]]; then
-  apt-get install -y libldap2-dev \
-    libsasl2-dev
-fi
+# Install frontend packages on Vagrant systems
+apt-get install -y libldap2-dev \
+  libsasl2-dev
 
 # First, source the virtualenv
 cd ${MINION_BASE_DIRECTORY}
@@ -36,7 +34,7 @@ echo -e "alias minionctl=\"supervisorctl -c ${MINION_BASE_DIRECTORY}/minion-fron
 service minion start
 sleep 5
 
-# Start up minion-frontend; in Docker, this is the CMD
+# If we're running in Docker, we start these with CMD
 if [[ $MINION_DOCKERIZED == 'true' ]]; then
-  tail -f /var/log/minion/*.log
+  service minion stop
 fi

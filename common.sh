@@ -3,19 +3,22 @@
 # The base directory for large pieces of the install
 MINION_BASE_DIRECTORY=/opt/minion
 
-# Install common packages on Vagrant systems
-if [[ `id -un vagrant` == 'vagrant' ]]; then
-  apt-get update && apt-get -y install build-essential \
+# Install common packages
+apt-get update && apt-get -y install build-essential \
     git \
     libssl-dev \
     python \
     python-dev \
     python-virtualenv \
     supervisor
-fi
 
 # We install supervisor, but we don't actually need it to startup: /etc/init.d/minion already does that
 update-rc.d -f supervisor remove
+
+# Create the Minion directory if it doesn't exist, like in Docker
+if [[ ! -d "${MINION_BASE_DIRECTORY}" ]]; then
+    mkdir -p "${MINION_BASE_DIRECTORY}"
+fi
 
 cd ${MINION_BASE_DIRECTORY}
 

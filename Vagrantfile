@@ -55,7 +55,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # backend.vm.synced_folder BACKEND_PLUGIN_NMAP_SRC, BACKEND_PLUGIN_NMAP_DST, create: true
 
     # Copy the configuration files into the VM
-    backend.vm.provision "file", source: "backend.json", destination: "/tmp/backend.json"
     backend.vm.provision "file", source: "scan.json", destination: "/tmp/scan.json"
 
     backend.vm.provision "shell" do |s|
