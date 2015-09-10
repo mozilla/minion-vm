@@ -41,7 +41,8 @@ Running Docker
 --------------
 ```
 $ docker run -d --name 'minion-backend' 'mozilla/minion-backend'
-$ docker run -d -p 8080:8080 --name 'minion-frontend' --link minion-backend:minion-backend 'mozilla/minion-frontend'
+$ docker run -d -p 8080:8080 --name 'minion-frontend' \
+    --link minion-backend:minion-backend 'mozilla/minion-frontend'
 ```
 
 The Minion frontend should now be accessible over HTTP at the IP address of the system running Docker, on port 8080.
