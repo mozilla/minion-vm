@@ -32,7 +32,6 @@ python setup.py develop
 
 # Configure minion-backend (listening on 0.0.0.0:8383, and with no blacklist)
 mkdir -p /etc/minion
-mv /tmp/backend.json /etc/minion
 mv /tmp/scan.json /etc/minion
 
 # Install minion-nmap-plugin; comment out `git clone` if working on minion-nmap-plugin locally
